@@ -1,9 +1,9 @@
 # docker-svnserve
-'A simple subversion server, managed with supervisor'
+A simple subversion server, managed with supervisor.
 
-## What is docker-svnserve?
+## What is svnserve ?
 
-docker-svnserve is a unofficial docker image for the [svnserve][1] subversion server.
+svnserve is a unofficial docker image for the [svnserve][1] subversion server.
 
 This image is based on Ubuntu docker image, and use [supervisor][2] daemons manager.
 
@@ -24,8 +24,7 @@ It's up to you to map a volume to ```/opt/svn```, so your data persist.
 It's also up to you to manage configuration of this svn root, using the directory ```/opt/svn/conf```. If there is no svn root, one is created automatically
 
 ### Direct use
-A container based on this image could be created as:
-
+Create a container based on this image:
 ```
 docker run \
     --detatch \
@@ -42,21 +41,26 @@ With the above comand, `svnserve` will:
 - (re)start with the system 
 - serve repositories from `/local/path/to/svn` in the host's filesystem.
 
-### use with docker-compose
+### Use with docker-compose
 File ```docker-compose.yml```:
 ```
 version: '2'
 services:
   svnserve:
     image: gbouthenot/svnserve
+    restart: always
     ports:
       - "3690:3690"
     volumes:
       - ./svnroot/:/opt/svn/
 ```
 
+Same functionnality than above, except the svnroot is specified as a relative directory.
+
 
 ### Adminstration
+
+You should backup ```/opt/svn```
 
 You should configure the server with the directory /opt/svn/conf.
 
@@ -66,8 +70,6 @@ If this directory does not exist, it is populated on first run. Then you can for
 harry = harryssecret
 sally = sallyssecret
 ```
-
-You should also backup ```/opt/svn```
 
 [1]: https://subversion.apache.org/
 [2]: http://supervisord.org/
