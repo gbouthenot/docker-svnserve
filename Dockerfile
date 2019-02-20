@@ -12,4 +12,6 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 3690
 
+WORKDIR "/opt/svn"
+
 CMD ["default"]

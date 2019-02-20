@@ -1,5 +1,5 @@
 # docker-svnserve
-A simple subversion server, managed with supervisor.
+A simple, multiple repositories, subversion server, managed with supervisor.
 
 ## What is svnserve ?
 
@@ -7,13 +7,16 @@ svnserve is a unofficial docker image for the [svnserve][1] subversion server.
 
 This image is based on Ubuntu docker image, and use [supervisor][2] daemons manager.
 
+
 ## Why?
 
 There are already a number of avaliable docker images for subversion and svnserve hosting. But most of them either are:
 
+- Setup to use a single repository
 - Too involved; Containers shouldn't be like aplications themselves with configuration in environment variables, etc. Instead, images should be extensible so other users can create their own images with customizations, based on yours.
 - Bloated; Based on heavy *fat-container* base images.
 - Don't handle signals properly, forcing docker to send `SIGKILL` to the process.
+
 
 ## How to use this image
 
@@ -21,7 +24,7 @@ The image is intented to run as a daemon; it exposed the default svnserve port (
 
 It's up to you to map a volume to ```/opt/svn```, so your data persist.
 
-It's also up to you to manage configuration of this svn root, using the directory ```/opt/svn/conf```. If there is no svn root, one is created automatically
+It's also up to you to manage configuration of the repositories in this svn root, using the directory ```/opt/svn```.
 
 ### Direct use
 Create a container based on this image:
@@ -62,13 +65,31 @@ Same functionnality than above, except the svnroot is specified as a relative di
 
 You should backup ```/opt/svn```
 
-You should configure the server with the directory /opt/svn/conf.
+To create a new repository: issue
+```
+docker exec svnserve svnadmin create <reponame>
 
-If this directory does not exist, it is populated on first run. Then you can for example set password for your user in ```conf/passwd```:
+# or (if you use docker-compose):
+docker-compose exec svnserve svnadmin create <reponame>
+```
+
+All the repositories are placed in the directory ```/opt/svn```, and configuration is done in the ```/opt/svn/<reponame>/conf```directory.
+
+For example, you can set passwords for your users in ```conf/passwd```:
 ```
 [users]
 harry = harryssecret
 sally = sallyssecret
+```
+
+You can use hashed passwords, see the option ```password-db```.
+
+You can set anonymous mode to no access, read only or read/write, in ```conf/svnserve.conf`:
+```
+[general]
+# anon-access = none
+# anon-access = read
+# auth-access = write
 ```
 
 [1]: https://subversion.apache.org/
